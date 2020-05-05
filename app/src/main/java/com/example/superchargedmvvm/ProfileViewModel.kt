@@ -2,7 +2,6 @@ package com.example.superchargedmvvm
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlin.random.Random
 
 class ProfileViewModel(val interactor: GetProfileInteractor) : ViewModel() {
     val viewState = MutableLiveData<ViewState>()
@@ -17,7 +16,7 @@ class ProfileViewModel(val interactor: GetProfileInteractor) : ViewModel() {
                     viewState.value = ViewState.ProfileLoaded(getProfileState.profile)
                 }
                 is GetProfileInteractor.State.Failure -> {
-                    viewState.value = ViewState.ProfileLoadFailure(Random.nextInt())
+                    viewState.value = ViewState.ProfileLoadFailure(getProfileState.errorMessage)
                 }
                 GetProfileInteractor.State.VerificationRequired -> {
                     actionState.value = ActionState.NeedsVerification
@@ -29,7 +28,7 @@ class ProfileViewModel(val interactor: GetProfileInteractor) : ViewModel() {
     sealed class ViewState() {
         object Loading: ViewState()
         data class ProfileLoaded(val profile: Profile): ViewState()
-        data class ProfileLoadFailure(val errorType: Int): ViewState()
+        data class ProfileLoadFailure(val errorMessage: String): ViewState()
     }
 
     sealed class ActionState {
