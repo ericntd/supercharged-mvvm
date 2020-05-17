@@ -7,9 +7,15 @@ class ProfileViewModel(val interactor: GetProfileInteractor) : ViewModel() {
     val viewState = MutableLiveData<ViewState>()
     val actionState = MutableLiveData<ActionState>()
 
-    fun fetchProfileAndRender() {
+    init {
+        fetchProfileAndRender()
+    }
+
+    private fun fetchProfileAndRender() {
+        println("fetchProfileAndRender")
         viewState.value = ViewState.Loading
         interactor.getProfile().let { getProfileState ->
+            println(getProfileState)
             when (getProfileState) {
                 is GetProfileInteractor.State.Success -> {
                     // render updates on UI
@@ -18,21 +24,25 @@ class ProfileViewModel(val interactor: GetProfileInteractor) : ViewModel() {
                 is GetProfileInteractor.State.Failure -> {
                     viewState.value = ViewState.ProfileLoadFailure(getProfileState.errorMessage)
                 }
-                GetProfileInteractor.State.VerificationRequired -> {
-                    actionState.value = ActionState.NeedsVerification
+                GetProfileInteractor.State.TnCUpdated -> {
+                    actionState.value = ActionState.TnCUpdated
+                }
+                GetProfileInteractor.State.LogOutRequired -> {
+                    // clear local data
+                    actionState.value = ActionState.NeedsLogOut
                 }
             }
         }
     }
 
-    sealed class ViewState() {
+    sealed class ViewState {
         object Loading: ViewState()
         data class ProfileLoaded(val profile: Profile): ViewState()
         data class ProfileLoadFailure(val errorMessage: String): ViewState()
     }
 
     sealed class ActionState {
-        object NeedsVerification : ActionState()
+        object TnCUpdated : ActionState()
         object NeedsLogOut: ActionState()
     }
 }

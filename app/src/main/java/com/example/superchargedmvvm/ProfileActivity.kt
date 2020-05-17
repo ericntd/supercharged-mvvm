@@ -1,8 +1,10 @@
 package com.example.superchargedmvvm
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -14,7 +16,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private val viewModel: ProfileViewModel by lazy {
         val getProfileInteractor = GetProfileInteractor()
-        val viewModelFactory = object: ViewModelProvider.Factory {
+        val viewModelFactory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return ProfileViewModel(getProfileInteractor) as T
             }
@@ -29,8 +31,6 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         setUpObservation()
-
-        viewModel.fetchProfileAndRender()
     }
 
     private fun setUpObservation() {
@@ -41,21 +41,29 @@ class ProfileActivity : AppCompatActivity() {
                     tvName.text = state.profile.name
                 }
                 is ProfileViewModel.ViewState.ProfileLoadFailure -> {
-                    // render error layout with icon, error messages
+                    tvName.text = "Something went wrong"
                 }
                 ProfileViewModel.ViewState.Loading -> {
                     // render loading animation
+                    tvName.text = "Loading..."
                 }
             }
         })
 
         viewModel.actionState.observe(this, Observer { state ->
             when (state) {
-                ProfileViewModel.ActionState.NeedsVerification -> {
-                    // navigation to Verification screen
+                ProfileViewModel.ActionState.TnCUpdated -> {
+                    AlertDialog.Builder(this).setTitle("Our Terms & Conditions have been updated")
+                        .setMessage("Please read... and accept")
+                        .setPositiveButton("Accept") { dialog, _ ->
+                            println("User accepts T & C")
+                            dialog.dismiss()
+                        }.setCancelable(false).show()
                 }
                 ProfileViewModel.ActionState.NeedsLogOut -> {
-                    // Clear data, finish this activity and navigate to LogIn screen?
+                    println("ProfileViewModel.ActionState.NeedsLogOut")
+                    startActivity(Intent(this, LogInActivity::class.java))
+                    finish()
                 }
             }
         })

@@ -9,7 +9,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ProfileActivity">
+        <activity
+            android:name=".LogInActivity"
+            android:label="Log-In Screen" />
+        <activity
+            android:name=".ProfileActivity"
+            android:label="Profile Screen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
