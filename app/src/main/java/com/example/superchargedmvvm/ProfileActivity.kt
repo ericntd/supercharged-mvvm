@@ -39,6 +39,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun setUpObservation() {
         viewModel.viewState.observe(this, Observer { state ->
+            hideLoading()
             when (state) {
                 is ProfileViewModel.ViewState.ProfileLoaded -> {
                     // render avatar, user name, photos etc.
@@ -54,7 +55,6 @@ class ProfileActivity : AppCompatActivity() {
         })
 
         viewModel.actionState.observe(this, Observer { state ->
-            hideLoading()
             when (state) {
                 ProfileViewModel.ActionState.TnCUpdated -> {
                     AlertDialog.Builder(this).setTitle("Our Terms & Conditions have been updated")
