@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 
 class ProfileViewModel(val interactor: GetProfileInteractor) : ViewModel() {
     val viewState = MutableLiveData<ViewState>()
-    val actionState = MutableLiveData<ActionState>()
+    val actionState = SingleLiveEvent<ActionState>()
 
     init {
         fetchProfileAndRender()
@@ -15,7 +15,7 @@ class ProfileViewModel(val interactor: GetProfileInteractor) : ViewModel() {
         println("fetchProfileAndRender")
         viewState.value = ViewState.Loading
         interactor.getProfile().let { getProfileState ->
-            println(getProfileState)
+            println("profile state is $getProfileState")
             when (getProfileState) {
                 is GetProfileInteractor.State.Success -> {
                     // render updates on UI

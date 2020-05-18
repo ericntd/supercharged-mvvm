@@ -2,6 +2,7 @@ package com.example.superchargedmvvm
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -10,8 +11,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
 class ProfileActivity : AppCompatActivity() {
-    private val tvName: TextView by lazy {
+    private val tvName by lazy {
         findViewById<TextView>(R.id.tv_name)
+    }
+    private val loader by lazy {
+        findViewById<View>(R.id.loader)
     }
 
     private val viewModel: ProfileViewModel by lazy {
@@ -44,13 +48,13 @@ class ProfileActivity : AppCompatActivity() {
                     tvName.text = "Something went wrong"
                 }
                 ProfileViewModel.ViewState.Loading -> {
-                    // render loading animation
-                    tvName.text = "Loading..."
+                    showLoading()
                 }
             }
         })
 
         viewModel.actionState.observe(this, Observer { state ->
+            hideLoading()
             when (state) {
                 ProfileViewModel.ActionState.TnCUpdated -> {
                     AlertDialog.Builder(this).setTitle("Our Terms & Conditions have been updated")
@@ -67,5 +71,13 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun hideLoading() {
+        loader.visibility = View.GONE
+    }
+
+    private fun showLoading() {
+        loader.visibility = View.VISIBLE
     }
 }
